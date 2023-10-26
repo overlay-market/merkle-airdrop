@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 /// ============ Imports ============
 
 import {DSTest} from "ds-test/test.sol"; // DSTest
+import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
 import {MerkleClaimERC20} from "../../MerkleClaimERC20.sol"; // MerkleClaimERC20
 import {OverlayV1Token} from "../../OverlayV1Token.sol"; // OverlayV1Token
 import {MerkleClaimERC20User} from "./MerkleClaimERC20User.sol"; // MerkleClaimERC20 user
@@ -28,7 +29,7 @@ contract MerkleClaimERC20Test is DSTest {
 
         // Create airdrop token
         TOKEN = new MerkleClaimERC20(
-            ovl,
+            IERC20(ovl),
             // Merkle root containing ALICE with 100e18 tokens but no BOB
             0xd0aa6a4e5b4e13462921d7518eebdb7b297a7877d6cfe078b0c318827392fb55
         );
