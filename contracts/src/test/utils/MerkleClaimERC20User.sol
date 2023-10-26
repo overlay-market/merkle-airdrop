@@ -3,40 +3,39 @@ pragma solidity >=0.8.0;
 
 /// ============ Imports ============
 
-import { MerkleClaimERC20 } from "../../MerkleClaimERC20.sol"; // MerkleClaimERC20
+import {MerkleClaimERC20} from "../../MerkleClaimERC20.sol"; // MerkleClaimERC20
 
 /// @title MerkleClaimERC20User
 /// @notice Mock MerkleClaimERC20 user
 /// @author Anish Agnihotri <contact@anishagnihotri.com>
 contract MerkleClaimERC20User {
+    /// ============ Immutable storage ============
 
-  /// ============ Immutable storage ============
+    /// @dev MerkleClaimERC20 contract
+    MerkleClaimERC20 internal immutable TOKEN;
 
-  /// @dev MerkleClaimERC20 contract
-  MerkleClaimERC20 immutable internal TOKEN;
+    /// ============ Constructor ============
 
-  /// ============ Constructor ============
+    /// @notice Creates a new MerkleClaimERC20User
+    /// @param _TOKEN MerkleClaimERC20 contract
+    constructor(MerkleClaimERC20 _TOKEN) {
+        TOKEN = _TOKEN;
+    }
 
-  /// @notice Creates a new MerkleClaimERC20User
-  /// @param _TOKEN MerkleClaimERC20 contract
-  constructor(MerkleClaimERC20 _TOKEN) {
-    TOKEN = _TOKEN;
-  }
+    /// ============ Helper functions ============
 
-  /// ============ Helper functions ============
+    /// @notice Returns users' token balance
+    function tokenBalance() public view returns (uint256) {
+        return TOKEN.balanceOf(address(this));
+    }
 
-  /// @notice Returns users' token balance
-  function tokenBalance() public view returns (uint256) {
-    return TOKEN.balanceOf(address(this));
-  }
+    /// ============ Inherited functionality ============
 
-  /// ============ Inherited functionality ============
-
-  /// @notice Allows user to claim tokens from contract
-  /// @param to address of claimee
-  /// @param amount of tokens owed to claimee
-  /// @param proof merkle proof to prove address and amount are in tree
-  function claim(address to, uint256 amount, bytes32[] calldata proof) public {
-    TOKEN.claim(to, amount, proof);
-  }
+    /// @notice Allows user to claim tokens from contract
+    /// @param to address of claimee
+    /// @param amount of tokens owed to claimee
+    /// @param proof merkle proof to prove address and amount are in tree
+    function claim(address to, uint256 amount, bytes32[] calldata proof) public {
+        TOKEN.claim(to, amount, proof);
+    }
 }
