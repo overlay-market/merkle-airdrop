@@ -65,7 +65,7 @@ contract MerkleClaimERC20 {
 
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(to, amount));
-        bool isValidLeaf = MerkleProof.verify(proof, merkleRoot, leaf);
+        bool isValidLeaf = MerkleProof.verifyCalldata(proof, merkleRoot, leaf);
         if (!isValidLeaf) revert NotInMerkle();
 
         // Set address to claimed

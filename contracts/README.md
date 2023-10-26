@@ -1,66 +1,30 @@
-## Foundry
+# MerkleClaimERC20
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+ERC20 token claimable by members of a [Merkle tree](https://en.wikipedia.org/wiki/Merkle_tree). Useful for conducting Airdrops. Utilizes [Solmate ERC20](https://github.com/Rari-Capital/solmate/blob/main/src/tokens/ERC20.sol) for modern ERC20 token implementation.
 
-Foundry consists of:
+## Test
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Tests use [Foundry: Forge](https://github.com/gakonst/foundry).
 
-## Documentation
+Install Foundry using the installation steps in the README of the linked repo.
 
-https://book.getfoundry.sh/
+### Run tests
 
-## Usage
+```bash
+# Go to contracts directory, if not already there
+cd contracts/
 
-### Build
+# Get dependencies
+forge update
 
-```shell
-$ forge build
+# Run tests
+forge test --root .
+# Run tests with stack traces
+forge test --root . -vvvv
 ```
 
-### Test
+## Credits
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- [@brockelmore](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/issues?q=is%3Apr+author%3Abrockelmore) for [#1](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/pull/1)
+- [@transmissions11](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/issues?q=is%3Apr+author%3Atransmissions11) for [#2](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/pull/2)
+- [@devanonon](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/issues?q=is%3Apr+author%3Adevanonon) for [#3](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/pull/8)
