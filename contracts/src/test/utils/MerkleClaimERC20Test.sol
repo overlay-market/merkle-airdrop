@@ -6,7 +6,6 @@ pragma solidity >=0.8.0;
 import {Test} from "forge-std/Test.sol";
 
 import {MerkleClaimERC20} from "../../MerkleClaimERC20.sol"; // MerkleClaimERC20
-import {IOverlayV1Token, TRANSFER_ROLE} from "../../interfaces/IOverlayV1Token.sol"; // /iOverlayV1Token
 import {OverlayV1Token} from "../../OverlayV1Token.sol"; // OverlayV1Token
 import {MerkleClaimERC20User} from "./MerkleClaimERC20User.sol"; // MerkleClaimERC20 user
 
@@ -35,7 +34,6 @@ contract MerkleClaimERC20Test is Test {
             0xd0aa6a4e5b4e13462921d7518eebdb7b297a7877d6cfe078b0c318827392fb55
         );
 
-        ovl.grantRole(TRANSFER_ROLE, address(TOKEN)); // allow contract to transfer OVL
         deal(address(ovl), address(TOKEN), 100e18); // total amount of tokens to be claimed
 
         // Setup airdrop users with custom addresses (to match merkle tree)
