@@ -12,21 +12,21 @@ contract MerkleClaimERC20User {
     /// ============ Immutable storage ============
 
     /// @dev MerkleClaimERC20 contract
-    MerkleClaimERC20 internal immutable TOKEN;
+    MerkleClaimERC20 internal immutable merkleClaim;
 
     /// ============ Constructor ============
 
     /// @notice Creates a new MerkleClaimERC20User
-    /// @param _TOKEN MerkleClaimERC20 contract
-    constructor(MerkleClaimERC20 _TOKEN) {
-        TOKEN = _TOKEN;
+    /// @param _merkleClaim MerkleClaimERC20 contract
+    constructor(MerkleClaimERC20 _merkleClaim) {
+        merkleClaim = _merkleClaim;
     }
 
     /// ============ Helper functions ============
 
     /// @notice Returns users' token balance
     function tokenBalance() public view returns (uint256) {
-        return TOKEN.token().balanceOf(address(this));
+        return merkleClaim.token().balanceOf(address(this));
     }
 
     /// ============ Inherited functionality ============
@@ -36,6 +36,6 @@ contract MerkleClaimERC20User {
     /// @param amount of tokens owed to claimee
     /// @param proof merkle proof to prove address and amount are in tree
     function claim(address to, uint256 amount, bytes32[] calldata proof) public {
-        TOKEN.claim(to, amount, proof);
+        merkleClaim.claim(to, amount, proof);
     }
 }
