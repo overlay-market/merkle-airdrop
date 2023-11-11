@@ -16,7 +16,7 @@ contract MerkleClaimERC20Test is Test {
     /// ============ Storage ============
 
     /// @dev MerkleClaimERC20 contract
-    MerkleClaimERC20 internal TOKEN;
+    MerkleClaimERC20 internal merkleClaim;
     /// @dev User: Alice (in merkle tree)
     MerkleClaimERC20User internal ALICE = MerkleClaimERC20User(0x185a4dc360CE69bDCceE33b3784B0282f7961aea);
     /// @dev User: Bob (not in merkle tree)
@@ -28,16 +28,17 @@ contract MerkleClaimERC20Test is Test {
         OverlayV1Token ovl = new OverlayV1Token();
 
         // Create airdrop token
-        TOKEN = new MerkleClaimERC20(
+        merkleClaim = new MerkleClaimERC20(
             ovl,
             // Merkle root containing ALICE with 100e18 tokens but no BOB
             0xd0aa6a4e5b4e13462921d7518eebdb7b297a7877d6cfe078b0c318827392fb55
         );
 
-        deal(address(ovl), address(TOKEN), 100e18); // total amount of tokens to be claimed
+        deal(address(ovl), address(this), 100e18); // total amount of tokens to be claimed
+        ovl.transfer(address(merkleClaim), 100e18);
 
         // Setup airdrop users with custom addresses (to match merkle tree)
-        deployCodeTo("MerkleClaimERC20User.sol", abi.encode(TOKEN), address(ALICE));
-        deployCodeTo("MerkleClaimERC20User.sol", abi.encode(TOKEN), address(BOB));
+        deployCodeTo("MerkleClaimERC20User.sol", abi.encode(merkleClaim), address(ALICE));
+        deployCodeTo("MerkleClaimERC20User.sol", abi.encode(merkleClaim), address(BOB));
     }
 }
