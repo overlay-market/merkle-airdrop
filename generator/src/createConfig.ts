@@ -8,8 +8,12 @@ const main = async () => {
     const upToTimestamp = Date.now() / 1000
 
     const ovlHolders = await getOvlHolders(upToTimestamp)
+    const litterboxHolders = await getNftHolders("litterbox", upToTimestamp)
+    const planckcatHolders = await getNftHolders("planckcat", upToTimestamp)
 
     console.log("ovlHolders", ovlHolders.length)
+    console.log("litterboxHolders", litterboxHolders.length)
+    console.log("planckcatHolders", planckcatHolders.length)
 }
 
 const getOvlHolders = async (upToTimestamp: number) => {
@@ -36,6 +40,31 @@ const getOvlHolders = async (upToTimestamp: number) => {
     }
 
     const positiveBalances = Object.entries(balances).flatMap(([address, balance]) => balance.gt(0) ? [{ address, balance }] : [])
+
+    return positiveBalances
+}
+
+const getNftHolders = async (collection: "litterbox" | "planckcat", upToTimestamp: number) => {
+    const transfers = await parseCSVFile(`data/${collection}_transfers.csv`)
+
+    // Sort by timestamp
+    transfers.sort((a, b) => +a["UnixTimestamp"] - +b["UnixTimestamp"])
+
+    const balances: Record<string, number> = {}
+
+    for (const transfer of transfers) {
+        if (+transfer["UnixTimestamp"] > upToTimestamp) break
+
+        const from = transfer["From"]
+        const to = transfer["To"]
+        // ERC1155 transfers have a "Value" field, ERC721 transfers don't
+        const value = +transfer["Value"] || 1
+
+        balances[from] = (balances[from] ?? 0) - value
+        balances[to] = (balances[to] ?? 0) + value
+    }
+
+    const positiveBalances = Object.entries(balances).flatMap(([address, balance]) => balance > 0 ? [{ address, balance }] : [])
 
     return positiveBalances
 }
