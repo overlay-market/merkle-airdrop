@@ -2,33 +2,17 @@ import fs from "fs"
 import csv from "csv-parser"
 import { BigNumber, ethers } from "ethers"
 
-async function main() {
-    const overlayHolders: Set<string> = new Set()
-    
-    const ovlHolders = await getOvlHolders(Date.now() / 1000)
+import { MARKETS } from "./constants"
+
+const main = async () => {
+    const upToTimestamp = Date.now() / 1000
+
+    const ovlHolders = await getOvlHolders(upToTimestamp)
+
+    console.log("ovlHolders", ovlHolders.length)
 }
 
-function parseCSVFile(filePath: string): Promise<Record<string, string>[]> {
-    return new Promise((resolve, reject) => {
-        const results: Record<string, string>[] = []
-
-        fs.createReadStream(filePath)
-            .on("error", (error: any) => {
-                reject(error)
-            })
-            .pipe(csv())
-            .on("data", (data: any) => {
-                results.push(data)
-            })
-            .on("end", () => {
-                resolve(results)
-            })
-    })
-}
-
-async function getOvlHolders(upToTimestamp: number) {
-    const ovlHolders: Set<string> = new Set()
-
+const getOvlHolders = async (upToTimestamp: number) => {
     const transfers = await parseCSVFile("data/ovl_transfers.csv")
 
     // Sort by timestamp
@@ -44,15 +28,34 @@ async function getOvlHolders(upToTimestamp: number) {
         // Make sure to remove commas from the quantity (eg. 1,000 -> 1000)
         const value = ethers.utils.parseEther(transfer["Quantity"].replaceAll(",", ""))
 
-        // address(0) will hold (-) the total supply
-        balances[from] = (balances[from] ?? BigNumber.from("0")).sub(value)
-        balances[to] = (balances[to] ?? BigNumber.from("0")).add(value)
+        // Ignore market interactions
+        if (!MARKETS.includes(from) && !MARKETS.includes(to)) {
+            balances[from] = (balances[from] ?? BigNumber.from("0")).sub(value)
+            balances[to] = (balances[to] ?? BigNumber.from("0")).add(value)
+        }
     }
 
-    console.log("OVL total supply:", balances[ethers.constants.AddressZero].abs().toString())
+    const positiveBalances = Object.entries(balances).flatMap(([address, balance]) => balance.gt(0) ? [{ address, balance }] : [])
 
-    // TODO: add accounts with more than 0 OVL to the `ovlHolders` set
-    return ovlHolders
+    return positiveBalances
+}
+
+const parseCSVFile = (filePath: string): Promise<Record<string, string>[]> => {
+    return new Promise((resolve, reject) => {
+        const results: Record<string, string>[] = []
+
+        fs.createReadStream(filePath)
+            .on("error", (error: any) => {
+                reject(error)
+            })
+            .pipe(csv())
+            .on("data", (data: any) => {
+                results.push(data)
+            })
+            .on("end", () => {
+                resolve(results)
+            })
+    })
 }
 
 main()

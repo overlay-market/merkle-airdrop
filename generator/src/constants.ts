@@ -1,0 +1,20 @@
+// Ref: https://api.studio.thegraph.com/proxy/49419/overlay-contracts/version/latest/graphql?query=query+MyQuery+%7B%0A++markets+%7B%0A++++id%0A++%7D%0A%7D
+export const MARKETS = [
+    "0x02e5938904014901c96f534b063ec732ea3b48d5",
+    "0x1067b7df86552a53d816ce3fed50d6d01310b48f",
+    "0x33659282d39e62b62060c3f9fb2230e97db15f1e",
+    "0x35e1d28ad9d8a80cff5bbf163a735c54eb6c1342",
+    "0x5114215415ee91ab5d973ba62fa9153ece1f6c5a",
+    "0x7c65c99ba1edfc94c535b7aa2d72b0f7357a676b",
+    "0x833ba1a942dc6d33bc3e6959637ae00e0cdcb20b",
+    "0x8440e56c2675d9b8e04183da3a3a744a4a16ed33",
+    "0x8c7dc90243fc7984583339da8df0a5d57ec491db",
+    "0x8c82c349e349ffd9403c3984cb1ad1b0f76f7d2e",
+    "0x909d893d5e7f250659fa56c2ca2920760eebb17f",
+    "0xa811698d855153cc7472d1fb356149a94bd618e7",
+    "0xb31d222c23104cbc2c04df77941f1f2c478133dd",
+    "0xc28350047d006ed387b0f210d4ea3218137a8a38",
+    "0xccd645835ca0033f0c1106e7b24f288e59e867e8",
+    "0xce45c64911bd0a088daabd73ee1bc09ae98cd84b",
+    "0xf30c5cb6205f115799b275430ea0874359476304",
+]
