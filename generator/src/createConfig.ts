@@ -1,8 +1,7 @@
 import fs from "fs"
 import csv from "csv-parser"
 import { BigNumber, ethers } from "ethers"
-
-import { MARKETS } from "./constants"
+import { parseEther } from "ethers/lib/utils"
 
 const main = async () => {
     const upToTimestamp = Date.now() / 1000
@@ -18,27 +17,61 @@ const main = async () => {
 
 const getOvlHolders = async (upToTimestamp: number) => {
     const transfers = await parseCSVFile("data/ovl_transfers.csv")
+    const marketBuilds = JSON.parse(fs.readFileSync("data/builds.json", "utf8")).data.builds
+    const marketUnwinds = JSON.parse(fs.readFileSync("data/unwinds.json", "utf8")).data.unwinds
 
     // Sort by timestamp
     transfers.sort((a, b) => +a["UnixTimestamp"] - +b["UnixTimestamp"])
+    marketBuilds.sort((a: any, b: any) => +a.timestamp - +b.timestamp)
+    marketUnwinds.sort((a: any, b: any) => +a.timestamp - +b.timestamp)
 
     const balances: Record<string, BigNumber> = {}
 
+    // Go through all OVL transfers and track balances for each user
     for (const transfer of transfers) {
         if (+transfer["UnixTimestamp"] > upToTimestamp) break
 
         const from = transfer["From"]
         const to = transfer["To"]
         // Make sure to remove commas from the quantity (eg. 1,000 -> 1000)
-        const value = ethers.utils.parseEther(transfer["Quantity"].replaceAll(",", ""))
+        const value = parseEther(transfer["Quantity"].replaceAll(",", ""))
 
-        // Ignore market interactions
-        if (!MARKETS.includes(from) && !MARKETS.includes(to)) {
-            balances[from] = (balances[from] ?? BigNumber.from("0")).sub(value)
-            balances[to] = (balances[to] ?? BigNumber.from("0")).add(value)
+        balances[from] = (balances[from] ?? BigNumber.from("0")).sub(value)
+        balances[to] = (balances[to] ?? BigNumber.from("0")).add(value)
+    }
+
+    const openPositions: Record<string, Record<string, {fraction: BigNumber, collateral: BigNumber}>> = {}
+    const initialFraction = parseEther("1000000000000000000")
+
+    // Track all open positions
+    for (const {position, timestamp, owner} of marketBuilds) {
+        if (+timestamp > upToTimestamp) break
+
+        const collateral = parseEther(position.initialCollateral.replaceAll(",", ""))
+        const positionId = position.market.id + position.positionId
+
+        openPositions[owner.id] = openPositions[owner.id] ?? {}
+        openPositions[owner.id][positionId] = { collateral, fraction: initialFraction }
+    }
+
+    // Remove fraction of position from open positions
+    for (const {position, timestamp, owner, fractionOfPosition} of marketUnwinds) {
+        if (+timestamp > upToTimestamp) break
+
+        const positionId = position.market.id + position.positionId
+        
+        openPositions[owner.id][positionId].fraction = openPositions[owner.id][positionId].fraction.sub(parseEther(fractionOfPosition))
+    }
+
+    // Add collateral locked in an open position to user's balance
+    for (const [owner, positions] of Object.entries(openPositions)) {
+        for (const {collateral, fraction} of Object.values(positions)) {
+            const balance = fraction.mul(collateral).div(initialFraction).div(ethers.constants.WeiPerEther)
+            balances[owner] = (balances[owner] ?? BigNumber.from("0")).add(balance)
         }
     }
 
+    // Keep only users with balance > 0
     const positiveBalances = Object.entries(balances).flatMap(([address, balance]) => balance.gt(0) ? [{ address, balance }] : [])
 
     return positiveBalances
