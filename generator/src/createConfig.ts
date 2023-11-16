@@ -1,11 +1,12 @@
 import fs from "fs"
 import csv from "csv-parser"
 import { BigNumber, ethers } from "ethers"
-import { parseEther } from "ethers/lib/utils"
+import { parseEther, parseUnits } from "ethers/lib/utils"
 
 const main = async () => {
     const upToTimestamp = Date.now() / 1000
 
+    // ----- Overlay -----
     const ovlHolders = await getOvlHolders(upToTimestamp)
     const litterboxHolders = await getNftHolders("litterbox", upToTimestamp)
     const planckcatHolders = await getNftHolders("planckcat", upToTimestamp)
@@ -13,6 +14,33 @@ const main = async () => {
     console.log("ovlHolders", ovlHolders.length)
     console.log("litterboxHolders", litterboxHolders.length)
     console.log("planckcatHolders", planckcatHolders.length)
+
+    // ----- dYdX -----
+    const dydxDepositors = getDydxDepositors(upToTimestamp)
+
+    console.log("dydxDepositors", dydxDepositors.length)
+}
+
+const getDydxDepositors = (upToTimestamp: number) => {
+    // These are already sorted by timestamp
+    const deposits = JSON.parse(fs.readFileSync("data/dydx.json", "utf8")).deposits
+
+    const balances: Record<string, BigNumber> = {}
+
+    for (const deposit of deposits) {
+        if (+deposit.blockTimestamp > upToTimestamp) break
+
+        const address = deposit.fromAddress
+        const value = BigNumber.from(deposit.depositAmount)
+
+        balances[address] = (balances[address] ?? BigNumber.from("0")).add(value)
+    }
+
+    const moreThan50UsdcDepositors = Object.entries(balances).flatMap(([address, balance]) =>
+        balance.gt(parseUnits("50", 6)) ? [{ address, balance }] : [] // mainnet USDC has 6 decimals
+    )
+
+    return moreThan50UsdcDepositors
 }
 
 const getOvlHolders = async (upToTimestamp: number) => {
