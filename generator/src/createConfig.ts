@@ -19,6 +19,16 @@ const main = async () => {
     const dydxDepositors = getDydxDepositors(upToTimestamp)
 
     console.log("dydxDepositors", dydxDepositors.length)
+
+    // ----- GMX -----
+    const gmxDepositors = getGmxDepositors() // data up to Nov 15th 2023
+
+    console.log("gmxDepositors", gmxDepositors.length)
+}
+
+const getGmxDepositors = () => {
+    const moreThan50UsdcDepositors = JSON.parse(fs.readFileSync("data/gmx.json", "utf8")).accounts
+    return moreThan50UsdcDepositors
 }
 
 const getDydxDepositors = (upToTimestamp: number) => {
