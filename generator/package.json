@@ -7,7 +7,8 @@
         "create:config": "ts-node src/createConfig.ts",
         "prettier": "prettier --write .",
         "fetch:dydx": "ts-node src/fetchers/dydx.ts",
-        "fetch:gmx": "ts-node src/fetchers/gmx.ts"
+        "fetch:gmx": "ts-node src/fetchers/gmx.ts",
+        "fetch:aevo": "ts-node src/fetchers/aevo.ts"
     },
     "author": "Anish Agnihotri",
     "license": "AGPL-3.0-only",

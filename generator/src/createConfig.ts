@@ -24,6 +24,17 @@ const main = async () => {
     const gmxDepositors = getGmxDepositors() // data up to Nov 15th 2023
 
     console.log("gmxDepositors", gmxDepositors.length)
+
+    // ----- Aevo -----
+    const aevoDepositors = getAevoDepositors() // data up October 2023
+
+    console.log("aevoDepositors", aevoDepositors.length)
+}
+
+const getAevoDepositors = (): string[] => {
+    const txs = JSON.parse(fs.readFileSync("data/aevo.json", "utf8")).result.rows
+    const depositsHigherThan50Usd = txs.filter((tx: any) => tx.action === "deposit" && tx.usd >= 50)
+    return depositsHigherThan50Usd.map((tx: any) => tx.user)
 }
 
 const getGmxDepositors = () => {
