@@ -29,6 +29,16 @@ const main = async () => {
     const aevoDepositors = getAevoDepositors() // data up October 2023
 
     console.log("aevoDepositors", aevoDepositors.length)
+
+    // ----- Synthetix -----
+    const synthetixDepositors = getSynthetixDepositors() // data up to Nov 16th 2023
+
+    console.log("synthetixDepositors", synthetixDepositors.length)
+}
+
+const getSynthetixDepositors = () => {
+    const moreThan50UsdDepositors = JSON.parse(fs.readFileSync("data/synthetix.json", "utf8")).accounts
+    return moreThan50UsdDepositors
 }
 
 const getAevoDepositors = (): string[] => {
