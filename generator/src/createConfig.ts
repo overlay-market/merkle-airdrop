@@ -39,6 +39,23 @@ const main = async () => {
     const degenScoreHolders = await getDegenScoreHolders() // data up to Nov 20th 2023
 
     console.log("degenScoreHolders", degenScoreHolders.length)
+
+    // ----- xGrail -----
+    const xGrailHolders = await getXGrailHolders() // data up to Nov 20th 2023
+
+    console.log("xGrailHolders", xGrailHolders.length)
+}
+
+const getXGrailHolders = async (top = 6_900) => {
+    const holders = await parseCSVFile("data/xgrail_holders.csv")
+
+    // Sort by balance ascending, and keep only `top` holders
+    holders.sort((a, b) => +b["Balance"] - +a["Balance"]).splice(top)
+
+    return holders.map(holder => ({
+        address: holder["HolderAddress"],
+        balance: +holder["Balance"]
+    }))
 }
 
 const getDegenScoreHolders = async () => {
