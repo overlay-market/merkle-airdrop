@@ -34,6 +34,26 @@ const main = async () => {
     const synthetixDepositors = getSynthetixDepositors() // data up to Nov 16th 2023
 
     console.log("synthetixDepositors", synthetixDepositors.length)
+
+    // ----- DegenScore -----
+    const degenScoreHolders = await getDegenScoreHolders() // data up to Nov 20th 2023
+
+    console.log("degenScoreHolders", degenScoreHolders.length)
+}
+
+const getDegenScoreHolders = async () => {
+    const holders = await parseCSVFile("data/degenscore_holders.csv")
+
+    const balances: Record<string, number> = {}
+
+    for (const holder of holders) {
+        const address = holder["HolderAddress"]
+        const balance = +holder["Unique Tokens"]
+
+        balances[address] = (balances[address] ?? 0) + balance
+    }
+
+    return Object.entries(balances).map(([address, balance]) => ({ address, balance }))
 }
 
 const getSynthetixDepositors = () => {
