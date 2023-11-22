@@ -44,6 +44,16 @@ const main = async () => {
     const xGrailHolders = await getXGrailHolders() // data up to Nov 20th 2023
 
     console.log("xGrailHolders", xGrailHolders.length)
+
+    // ----- Perpetual -----
+    const perpetualTraders = getPerpetualTraders() // data up to Nov 21st 2023
+
+    console.log("perpetualTraders", perpetualTraders.length)
+}
+
+const getPerpetualTraders = (): string[] => {
+    const moreThan50UsdDepositors = JSON.parse(fs.readFileSync("data/perp.json", "utf8")).accounts
+    return moreThan50UsdDepositors
 }
 
 const getXGrailHolders = async (top = 6_900) => {
@@ -73,7 +83,7 @@ const getDegenScoreHolders = async () => {
     return Object.entries(balances).map(([address, balance]) => ({ address, balance }))
 }
 
-const getSynthetixDepositors = () => {
+const getSynthetixDepositors = (): string[] => {
     const moreThan50UsdDepositors = JSON.parse(fs.readFileSync("data/synthetix.json", "utf8")).accounts
     return moreThan50UsdDepositors
 }
