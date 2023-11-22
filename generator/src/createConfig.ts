@@ -17,38 +17,55 @@ const main = async () => {
 
     // ----- dYdX -----
     const dydxDepositors = getDydxDepositors(upToTimestamp)
-
     console.log("dydxDepositors", dydxDepositors.length)
 
     // ----- GMX -----
     const gmxDepositors = getGmxDepositors() // data up to Nov 15th 2023
-
     console.log("gmxDepositors", gmxDepositors.length)
 
     // ----- Aevo -----
     const aevoDepositors = getAevoDepositors() // data up October 2023
-
     console.log("aevoDepositors", aevoDepositors.length)
 
     // ----- Synthetix -----
     const synthetixDepositors = getSynthetixDepositors() // data up to Nov 16th 2023
-
     console.log("synthetixDepositors", synthetixDepositors.length)
 
     // ----- DegenScore -----
     const degenScoreHolders = await getDegenScoreHolders() // data up to Nov 20th 2023
-
     console.log("degenScoreHolders", degenScoreHolders.length)
 
     // ----- xGrail -----
     const xGrailHolders = await getXGrailHolders() // data up to Nov 20th 2023
-
     console.log("xGrailHolders", xGrailHolders.length)
 
     // ----- Perpetual -----
     const perpetualTraders = getPerpetualTraders() // data up to Nov 21st 2023
-
     console.log("perpetualTraders", perpetualTraders.length)
+
+    // Combine all addresses
+    const aidropAddresses = new Set([
+        ...ovlHolders.map(holder => holder.address),
+        ...litterboxHolders.map(holder => holder.address),
+        ...planckcatHolders.map(holder => holder.address),
+        ...dydxDepositors.map(depositor => depositor.address),
+        ...gmxDepositors,
+        ...aevoDepositors,
+        ...synthetixDepositors,
+        ...degenScoreHolders.map(holder => holder.address),
+        ...xGrailHolders.map(holder => holder.address),
+        ...perpetualTraders
+    ])
+
+    console.log("Total airdrop addresses:", aidropAddresses.size)
+
+    const decimals = 18
+    const airdrop: Record<string, number> = {}
+
+    Array.from(aidropAddresses).forEach(address => airdrop[address] = 100)
+    
+    // Write to file
+    fs.writeFileSync("config.json", JSON.stringify({ decimals, airdrop }, null, 2))
 }
 
 const getPerpetualTraders = (): string[] => {
@@ -94,7 +111,7 @@ const getAevoDepositors = (): string[] => {
     return depositsHigherThan50Usd.map((tx: any) => tx.user)
 }
 
-const getGmxDepositors = () => {
+const getGmxDepositors = (): string[] => {
     const moreThan50UsdcDepositors = JSON.parse(fs.readFileSync("data/gmx.json", "utf8")).accounts
     return moreThan50UsdcDepositors
 }
