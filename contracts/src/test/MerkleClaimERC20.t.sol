@@ -138,4 +138,22 @@ contract Tests is MerkleClaimERC20Test {
         // Assert Alice balance before + 100 tokens = after balance
         assertEq(alicePostBalance, alicePreBalance + 100e18);
     }
+
+    function testAdminUpdatesMerkleRoot() public {
+        bytes32 newMerkleRoot = bytes32(uint256(1));
+        assertFalse(merkleClaim.merkleRoot() == newMerkleRoot);
+
+        merkleClaim.updateMerkleRoot(newMerkleRoot);
+
+        assertEq(merkleClaim.merkleRoot(), newMerkleRoot);
+    }
+
+    function testUserUpdatesMerkleRoot() public {
+        bytes32 newMerkleRoot = bytes32(uint256(1));
+
+        vm.startPrank(address(BOB));
+
+        vm.expectRevert("Ownable: caller is not the owner");
+        merkleClaim.updateMerkleRoot(newMerkleRoot);
+    }
 }
