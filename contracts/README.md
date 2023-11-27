@@ -23,12 +23,6 @@ forge test --root .
 forge test --root . -vvvv
 ```
 
-## Deploy
-
-Follow the `forge create` instructions ([CLI README](https://github.com/gakonst/foundry/blob/master/cli/README.md#build)) to deploy your contracts or use [Remix](https://remix.ethereum.org/).
-
-You can specify the token `name`, `symbol`, `decimals`, and airdrop `merkleRoot` upon deploy.
-
 ## Credits
 
 - [@brockelmore](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/issues?q=is%3Apr+author%3Abrockelmore) for [#1](https://github.com/Anish-Agnihotri/merkle-airdrop-starter/pull/1)
