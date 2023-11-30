@@ -31,9 +31,6 @@ contract MerkleClaimERC20 is Ownable {
     /// @notice Thrown if address/amount are not part of Merkle tree
     error NotInMerkle();
 
-    /// @notice Thrown if claim contract doesn't have enough tokens to payout
-    error NotEnoughRewards();
-
     /// ============ Constructor ============
 
     /// @notice Creates a new MerkleClaimERC20 contract
@@ -43,14 +40,6 @@ contract MerkleClaimERC20 is Ownable {
         token = _token;
         merkleRoot = _merkleRoot;
     }
-
-    /// ============ Events ============
-
-    /// @notice Emitted after a successful token claim
-    /// @param to recipient of claim
-    /// @param amount of tokens claimed
-    // @audit remove?
-    event Claim(address indexed to, uint256 amount);
 
     /// ============ Functions ============
 
@@ -62,10 +51,6 @@ contract MerkleClaimERC20 is Ownable {
         // Throw if address has already claimed tokens
         if (hasClaimed[to]) revert AlreadyClaimed();
 
-        // @audit remove?
-        // Throw if the contract doesn't hold enough tokens for claimee
-        if (amount > token.balanceOf(address(this))) revert NotEnoughRewards();
-
         // Verify merkle proof, or revert if not in tree
         bytes32 leaf = keccak256(abi.encodePacked(to, amount));
         bool isValidLeaf = MerkleProof.verifyCalldata(proof, merkleRoot, leaf);
@@ -76,9 +61,6 @@ contract MerkleClaimERC20 is Ownable {
 
         // Award tokens to address
         token.transfer(to, amount);
-
-        // Emit claim event
-        emit Claim(to, amount);
     }
 
     /// @notice Allows owner to update merkle root
