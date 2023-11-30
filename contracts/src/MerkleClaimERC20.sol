@@ -3,9 +3,9 @@ pragma solidity 0.8.19;
 
 /// ============ Imports ============
 
-import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
-import {MerkleProof} from "@openzeppelin/utils/cryptography/MerkleProof.sol";
-import {Ownable} from "@openzeppelin/access/Ownable.sol";
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
+import {MerkleProof} from "openzeppelin/utils/cryptography/MerkleProof.sol";
+import {Ownable} from "openzeppelin/access/Ownable.sol";
 
 /// @title MerkleClaimERC20
 /// @author Anish Agnihotri <contact@anishagnihotri.com>
@@ -49,6 +49,7 @@ contract MerkleClaimERC20 is Ownable {
     /// @notice Emitted after a successful token claim
     /// @param to recipient of claim
     /// @param amount of tokens claimed
+    // @audit remove?
     event Claim(address indexed to, uint256 amount);
 
     /// ============ Functions ============
@@ -61,6 +62,7 @@ contract MerkleClaimERC20 is Ownable {
         // Throw if address has already claimed tokens
         if (hasClaimed[to]) revert AlreadyClaimed();
 
+        // @audit remove?
         // Throw if the contract doesn't hold enough tokens for claimee
         if (amount > token.balanceOf(address(this))) revert NotEnoughRewards();
 

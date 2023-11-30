@@ -2,8 +2,8 @@
 pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
-import {OverlayV1Token} from "../src/OverlayV1Token.sol";
-import {MINTER_ROLE} from "../src/interfaces/IOverlayV1Token.sol";
+import {OverlayV1Token} from "src/OverlayV1Token.sol";
+import {MINTER_ROLE} from "src/interfaces/IOverlayV1Token.sol";
 
 // Deploy with:
 // source .env

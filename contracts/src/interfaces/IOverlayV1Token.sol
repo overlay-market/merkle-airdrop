@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-import "@openzeppelin/token/ERC20/IERC20.sol";
-import "@openzeppelin/access/IAccessControlEnumerable.sol";
+import "openzeppelin/token/ERC20/IERC20.sol";
+import "openzeppelin/access/IAccessControlEnumerable.sol";
 
 bytes32 constant MINTER_ROLE = keccak256("MINTER");
 bytes32 constant BURNER_ROLE = keccak256("BURNER");
