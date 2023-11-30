@@ -21,7 +21,7 @@ function generateLeaf(address: string, value: string): Buffer {
     "hex"
   );
 }
-
+[0xb70f72ad2568014b7e8950767cb2c100335d9d1832e35ee6e69c32bfc76ab94f,0x0f93af07877ce05fa024464865ff4f62801df305f1f290f912d3cab86d3a1d0f,0x0b639ce32a9ccdbb3d4dd64b8b39da118e1e3158a47d3a877b1dfdddec6a864e,0x1026155d95e8715194da3a076dfd8146b394ea8b0f823896b7eea1e0ec72d9de,0xe7589e5c2ea51d4f4a3da14a220856fc6305849e3a5e60eb1f545464c653ecd4,0x5ec830bd396e0eb89cc96a67cd1a5bb971043b6196cce044e70b3be10e7f90fc,0x54a84e362d3f1994b806cefe27bb5f82baa818967b1cf561a20bacba2b4ae558,0x34adc1dea903c5e9402139b9a3fabcb75a02004d371f350f379f331745d19366,0xeb3fa1357b160ead207ffe820029b4c46b7f629dc46a7102b9828d93ecee0f0b,0xe7224934dc5ec675182b52f6efd0615d0a1955ed65f2e320a5dd1f67986b2918,0xc0bc306ad4f0c700029dd02be1a7b22072dfa2f3203d71b8ad35922de9d120c3,0x28e67b43aaf2702ee521a2258b5e751fd91dcfed2ec62ca7e51827a607115ebd,0x4893eec1fbce543d94d1d006c6f3ee4f7b4f2259f5dd039a61abd07269d8974e,0x10ee1cd398d1341b44cfb475cff5f9a98988343853e00c275167ff9f365805bb,0x79b250cc9332e9aebe4dbb1a40a468489621d1615caa6f5e046675641985d857,0x1223e554c0df0c5feacec6a46945745ca496cf76410f82db1519c0ee674c1533,0x1c6cebc49a25f3d40fc053acaf4f8e6db978e6131f3db4f0b1ff1a3bd2b98060,0x83520117bc585d8cb32a11c17d0496a6276d23becdd5ceacd0c6a96a2dae5874,0x93a84db3c67c9a55dae48ceca522015c557218ca43e831ac63ed7e73c9b2ba8f]
 // Setup merkle tree
 const merkleTree = new MerkleTree(
   // Generate leafs
@@ -77,8 +77,8 @@ function useToken() {
    */
   const getAirdropAmount = (address: string): number => {
     // If address is in airdrop. convert address to correct checksum
-    address = ethers.utils.getAddress(address)
-    
+    // address = ethers.utils.getAddress(address)
+    console.log({address})
     if (address in config.airdrop) {
       // Return number of tokens available
       return config.airdrop[address];
@@ -112,13 +112,14 @@ function useToken() {
     const formattedAddress: string = ethers.utils.getAddress(address);
     // Get tokens for address
     const numTokens: string = ethers.utils
-      .parseUnits(config.airdrop[ethers.utils.getAddress(address)].toString(), config.decimals)
+      .parseUnits(config.airdrop[address].toString(), config.decimals)
       .toString();
 
     // Generate hashed leaf from address
     const leaf: Buffer = generateLeaf(formattedAddress, numTokens);
     // Generate airdrop proof
     const proof: string[] = merkleTree.getHexProof(leaf);
+    console.log({proof})
 
     // Try to claim airdrop and refresh sync status
     try {
@@ -139,6 +140,7 @@ function useToken() {
 
     // Force authentication
     if (address) {
+      console.log({address})
       // Collect number of tokens for address
       const tokens = getAirdropAmount(address);
       setNumTokens(tokens);
