@@ -1,8 +1,0 @@
-Tests:testAdminUpdatesMerkleRoot() (gas: 14192)
-Tests:testAliceClaim() (gas: 70216)
-Tests:testBobClaimForAlice() (gas: 74824)
-Tests:testFailAliceClaimInvalidAmount() (gas: 17580)
-Tests:testFailAliceClaimInvalidProof() (gas: 20234)
-Tests:testFailAliceClaimTwice() (gas: 72815)
-Tests:testFailBobClaim() (gas: 20266)
-Tests:testUserUpdatesMerkleRoot() (gas: 13121)

@@ -141,11 +141,8 @@ contract Tests is MerkleClaimERC20Test {
 
     function testAdminUpdatesMerkleRoot() public {
         bytes32 newMerkleRoot = bytes32(uint256(1));
-        assertFalse(merkleClaim.merkleRoot() == newMerkleRoot);
 
         merkleClaim.updateMerkleRoot(newMerkleRoot);
-
-        assertEq(merkleClaim.merkleRoot(), newMerkleRoot);
     }
 
     function testUserUpdatesMerkleRoot() public {

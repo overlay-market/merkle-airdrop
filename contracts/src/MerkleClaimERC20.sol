@@ -4,21 +4,21 @@ pragma solidity 0.8.19;
 /// ============ Imports ============
 
 import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
-import {MerkleProof} from "openzeppelin/utils/cryptography/MerkleProof.sol";
 import {Ownable} from "openzeppelin/access/Ownable.sol";
+import {MerkleProofLib} from "solady/src/utils/MerkleProofLib.sol";
 
 /// @title MerkleClaimERC20
 /// @author Anish Agnihotri <contact@anishagnihotri.com>
 contract MerkleClaimERC20 is Ownable {
     /// ============ Immutable storage ============
 
-    /// @notice ERC20-claimee inclusion root
-    bytes32 public merkleRoot;
-
     /// @notice Contract address of airdropped token
     IERC20 public immutable token;
 
     /// ============ Mutable storage ============
+
+    /// @notice ERC20-claimee inclusion root
+    bytes32 private merkleRoot;
 
     /// @notice Mapping of addresses who have claimed tokens
     mapping(address => bool) public hasClaimed;
@@ -52,9 +52,9 @@ contract MerkleClaimERC20 is Ownable {
         if (hasClaimed[to]) revert AlreadyClaimed();
 
         // Verify merkle proof, or revert if not in tree
-        bytes32 leaf = keccak256(abi.encodePacked(to, amount));
-        bool isValidLeaf = MerkleProof.verifyCalldata(proof, merkleRoot, leaf);
-        if (!isValidLeaf) revert NotInMerkle();
+        if (!MerkleProofLib.verifyCalldata(proof, merkleRoot, keccak256(abi.encodePacked(to, amount)))) {
+            revert NotInMerkle();
+        }
 
         // Set address to claimed
         hasClaimed[to] = true;
