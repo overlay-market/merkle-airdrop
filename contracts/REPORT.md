@@ -1,5 +1,6 @@
 ## Gas optimization
 With some changes (up to disccuss) we can achieve 8% gas saving.
+
 ![image](https://github.com/overlay-market/merkle-airdrop/assets/46317127/82eade53-98bd-47d5-8ce2-f8d7ba252853)
 
 ### Removed `Claim` event
