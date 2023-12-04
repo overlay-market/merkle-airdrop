@@ -3,22 +3,22 @@ pragma solidity 0.8.19;
 
 /// ============ Imports ============
 
-import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
-import {MerkleProof} from "@openzeppelin/utils/cryptography/MerkleProof.sol";
-import {Ownable} from "@openzeppelin/access/Ownable.sol";
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
+import {Ownable} from "openzeppelin/access/Ownable.sol";
+import {MerkleProofLib} from "solady/src/utils/MerkleProofLib.sol";
 
 /// @title MerkleClaimERC20
 /// @author Anish Agnihotri <contact@anishagnihotri.com>
 contract MerkleClaimERC20 is Ownable {
     /// ============ Immutable storage ============
 
-    /// @notice ERC20-claimee inclusion root
-    bytes32 public merkleRoot;
-
     /// @notice Contract address of airdropped token
     IERC20 public immutable token;
 
     /// ============ Mutable storage ============
+
+    /// @notice ERC20-claimee inclusion root
+    bytes32 private merkleRoot;
 
     /// @notice Mapping of addresses who have claimed tokens
     mapping(address => bool) public hasClaimed;
@@ -31,9 +31,6 @@ contract MerkleClaimERC20 is Ownable {
     /// @notice Thrown if address/amount are not part of Merkle tree
     error NotInMerkle();
 
-    /// @notice Thrown if claim contract doesn't have enough tokens to payout
-    error NotEnoughRewards();
-
     /// ============ Constructor ============
 
     /// @notice Creates a new MerkleClaimERC20 contract
@@ -43,13 +40,6 @@ contract MerkleClaimERC20 is Ownable {
         token = _token;
         merkleRoot = _merkleRoot;
     }
-
-    /// ============ Events ============
-
-    /// @notice Emitted after a successful token claim
-    /// @param to recipient of claim
-    /// @param amount of tokens claimed
-    event Claim(address indexed to, uint256 amount);
 
     /// ============ Functions ============
 
@@ -61,22 +51,16 @@ contract MerkleClaimERC20 is Ownable {
         // Throw if address has already claimed tokens
         if (hasClaimed[to]) revert AlreadyClaimed();
 
-        // Throw if the contract doesn't hold enough tokens for claimee
-        if (amount > token.balanceOf(address(this))) revert NotEnoughRewards();
-
         // Verify merkle proof, or revert if not in tree
-        bytes32 leaf = keccak256(abi.encodePacked(to, amount));
-        bool isValidLeaf = MerkleProof.verifyCalldata(proof, merkleRoot, leaf);
-        if (!isValidLeaf) revert NotInMerkle();
+        if (!MerkleProofLib.verifyCalldata(proof, merkleRoot, keccak256(abi.encodePacked(to, amount)))) {
+            revert NotInMerkle();
+        }
 
         // Set address to claimed
         hasClaimed[to] = true;
 
         // Award tokens to address
         token.transfer(to, amount);
-
-        // Emit claim event
-        emit Claim(to, amount);
     }
 
     /// @notice Allows owner to update merkle root

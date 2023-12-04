@@ -2,8 +2,8 @@
 pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
-import {IERC20} from "@openzeppelin/token/ERC20/IERC20.sol";
-import {MerkleClaimERC20} from "../src/MerkleClaimERC20.sol";
+import {IERC20} from "openzeppelin/token/ERC20/IERC20.sol";
+import {MerkleClaimERC20} from "src/MerkleClaimERC20.sol";
 
 // Deploy with:
 // source .env
@@ -17,7 +17,7 @@ contract DeployScript is Script {
         IERC20 ovl = IERC20(0x088feB3063d118c037ecAc999AD53Ec532780614);
         bytes32 merkleRoot = 0x0e4db3677f424b884357f6f95d4a5e2273e600875b8599841fcfe68539080562;
 
-        MerkleClaimERC20 merkleClaim = new MerkleClaimERC20(ovl, merkleRoot);
+        new MerkleClaimERC20(ovl, merkleRoot);
 
         vm.stopBroadcast();
     }
