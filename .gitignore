@@ -10,6 +10,7 @@ generator/node_modules
 generator/dist
 generator/*.log
 generator/merkle.json
+generator/.env
 
 # Frontend
 frontend/.env.local
