@@ -12,13 +12,17 @@ Given a `decimals` count for a token and list of airdrop recipients, outputs:
 cd generator/
 
 # Install dependencies
-npm install
+pnpm install
 
 # Edit config.json
 vim config.json
 
+# Run prisma commands
+npx prisma db push
+npx prisma generate
+
 # Run script
-npm run start
+pnpm run start
 ```
 
 Outputs a `merkle.json`, in the following format:
