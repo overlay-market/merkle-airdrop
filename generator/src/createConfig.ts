@@ -45,16 +45,16 @@ const main = async () => {
 
     // Combine all addresses
     const aidropAddresses = new Set([
-        ...ovlHolders.map(holder => holder.address),
-        ...litterboxHolders.map(holder => holder.address),
-        ...planckcatHolders.map(holder => holder.address),
-        ...dydxDepositors.map(depositor => depositor.address),
+        ...ovlHolders.map((holder) => holder.address),
+        ...litterboxHolders.map((holder) => holder.address),
+        ...planckcatHolders.map((holder) => holder.address),
+        ...dydxDepositors.map((depositor) => depositor.address),
         ...gmxDepositors,
         ...aevoDepositors,
         ...synthetixDepositors,
-        ...degenScoreHolders.map(holder => holder.address),
-        ...xGrailHolders.map(holder => holder.address),
-        ...perpetualTraders
+        ...degenScoreHolders.map((holder) => holder.address),
+        ...xGrailHolders.map((holder) => holder.address),
+        ...perpetualTraders,
     ])
 
     console.log("Total airdrop addresses:", aidropAddresses.size)
@@ -62,14 +62,19 @@ const main = async () => {
     const decimals = 18
     const airdrop: Record<string, number> = {}
 
-    Array.from(aidropAddresses).forEach(address => airdrop[address] = 100)
-    
+    Array.from(aidropAddresses).forEach((address) => (airdrop[address] = 100))
+
     // Write to file
-    fs.writeFileSync("config.json", JSON.stringify({ decimals, airdrop }, null, 2))
+    fs.writeFileSync(
+        "config.json",
+        JSON.stringify({ decimals, airdrop }, null, 2)
+    )
 }
 
 const getPerpetualTraders = (): string[] => {
-    const moreThan50UsdDepositors = JSON.parse(fs.readFileSync("data/perp.json", "utf8")).accounts
+    const moreThan50UsdDepositors = JSON.parse(
+        fs.readFileSync("data/perp.json", "utf8")
+    ).accounts
     return moreThan50UsdDepositors
 }
 
@@ -79,9 +84,9 @@ const getXGrailHolders = async (top = 6_900) => {
     // Sort by balance ascending, and keep only `top` holders
     holders.sort((a, b) => +b["Balance"] - +a["Balance"]).splice(top)
 
-    return holders.map(holder => ({
+    return holders.map((holder) => ({
         address: holder["HolderAddress"],
-        balance: +holder["Balance"]
+        balance: +holder["Balance"],
     }))
 }
 
@@ -97,28 +102,40 @@ const getDegenScoreHolders = async () => {
         balances[address] = (balances[address] ?? 0) + balance
     }
 
-    return Object.entries(balances).map(([address, balance]) => ({ address, balance }))
+    return Object.entries(balances).map(([address, balance]) => ({
+        address,
+        balance,
+    }))
 }
 
 const getSynthetixDepositors = (): string[] => {
-    const moreThan50UsdDepositors = JSON.parse(fs.readFileSync("data/synthetix.json", "utf8")).accounts
+    const moreThan50UsdDepositors = JSON.parse(
+        fs.readFileSync("data/synthetix.json", "utf8")
+    ).accounts
     return moreThan50UsdDepositors
 }
 
 const getAevoDepositors = (): string[] => {
-    const txs = JSON.parse(fs.readFileSync("data/aevo.json", "utf8")).result.rows
-    const depositsHigherThan50Usd = txs.filter((tx: any) => tx.action === "deposit" && tx.usd >= 50)
+    const txs = JSON.parse(fs.readFileSync("data/aevo.json", "utf8")).result
+        .rows
+    const depositsHigherThan50Usd = txs.filter(
+        (tx: any) => tx.action === "deposit" && tx.usd >= 50
+    )
     return depositsHigherThan50Usd.map((tx: any) => tx.user)
 }
 
 const getGmxDepositors = (): string[] => {
-    const moreThan50UsdcDepositors = JSON.parse(fs.readFileSync("data/gmx.json", "utf8")).accounts
+    const moreThan50UsdcDepositors = JSON.parse(
+        fs.readFileSync("data/gmx.json", "utf8")
+    ).accounts
     return moreThan50UsdcDepositors
 }
 
 const getDydxDepositors = (upToTimestamp: number) => {
     // These are already sorted by timestamp
-    const deposits = JSON.parse(fs.readFileSync("data/dydx.json", "utf8")).deposits
+    const deposits = JSON.parse(
+        fs.readFileSync("data/dydx.json", "utf8")
+    ).deposits
 
     const balances: Record<string, BigNumber> = {}
 
@@ -128,11 +145,14 @@ const getDydxDepositors = (upToTimestamp: number) => {
         const address = deposit.fromAddress
         const value = BigNumber.from(deposit.depositAmount)
 
-        balances[address] = (balances[address] ?? BigNumber.from("0")).add(value)
+        balances[address] = (balances[address] ?? BigNumber.from("0")).add(
+            value
+        )
     }
 
-    const moreThan50UsdcDepositors = Object.entries(balances).flatMap(([address, balance]) =>
-        balance.gt(parseUnits("50", 6)) ? [{ address, balance }] : [] // mainnet USDC has 6 decimals
+    const moreThan50UsdcDepositors = Object.entries(balances).flatMap(
+        ([address, balance]) =>
+            balance.gt(parseUnits("50", 6)) ? [{ address, balance }] : [] // mainnet USDC has 6 decimals
     )
 
     return moreThan50UsdcDepositors
@@ -140,8 +160,11 @@ const getDydxDepositors = (upToTimestamp: number) => {
 
 const getOvlHolders = async (upToTimestamp: number) => {
     const transfers = await parseCSVFile("data/ovl_transfers.csv")
-    const marketBuilds = JSON.parse(fs.readFileSync("data/builds.json", "utf8")).data.builds
-    const marketUnwinds = JSON.parse(fs.readFileSync("data/unwinds.json", "utf8")).data.unwinds
+    const marketBuilds = JSON.parse(fs.readFileSync("data/builds.json", "utf8"))
+        .data.builds
+    const marketUnwinds = JSON.parse(
+        fs.readFileSync("data/unwinds.json", "utf8")
+    ).data.unwinds
 
     // Sort by timestamp
     transfers.sort((a, b) => +a["UnixTimestamp"] - +b["UnixTimestamp"])
@@ -163,44 +186,69 @@ const getOvlHolders = async (upToTimestamp: number) => {
         balances[to] = (balances[to] ?? BigNumber.from("0")).add(value)
     }
 
-    const openPositions: Record<string, Record<string, {fraction: BigNumber, collateral: BigNumber}>> = {}
+    const openPositions: Record<
+        string,
+        Record<string, { fraction: BigNumber; collateral: BigNumber }>
+    > = {}
     const initialFraction = parseEther("1000000000000000000")
 
     // Track all open positions
-    for (const {position, timestamp, owner} of marketBuilds) {
+    for (const { position, timestamp, owner } of marketBuilds) {
         if (+timestamp > upToTimestamp) break
 
-        const collateral = parseEther(position.initialCollateral.replaceAll(",", ""))
+        const collateral = parseEther(
+            position.initialCollateral.replaceAll(",", "")
+        )
         const positionId = position.market.id + position.positionId
 
         openPositions[owner.id] = openPositions[owner.id] ?? {}
-        openPositions[owner.id][positionId] = { collateral, fraction: initialFraction }
+        openPositions[owner.id][positionId] = {
+            collateral,
+            fraction: initialFraction,
+        }
     }
 
     // Remove fraction of position from open positions
-    for (const {position, timestamp, owner, fractionOfPosition} of marketUnwinds) {
+    for (const {
+        position,
+        timestamp,
+        owner,
+        fractionOfPosition,
+    } of marketUnwinds) {
         if (+timestamp > upToTimestamp) break
 
         const positionId = position.market.id + position.positionId
-        
-        openPositions[owner.id][positionId].fraction = openPositions[owner.id][positionId].fraction.sub(parseEther(fractionOfPosition))
+
+        openPositions[owner.id][positionId].fraction = openPositions[owner.id][
+            positionId
+        ].fraction.sub(parseEther(fractionOfPosition))
     }
 
     // Add collateral locked in an open position to user's balance
     for (const [owner, positions] of Object.entries(openPositions)) {
-        for (const {collateral, fraction} of Object.values(positions)) {
-            const balance = fraction.mul(collateral).div(initialFraction).div(ethers.constants.WeiPerEther)
-            balances[owner] = (balances[owner] ?? BigNumber.from("0")).add(balance)
+        for (const { collateral, fraction } of Object.values(positions)) {
+            const balance = fraction
+                .mul(collateral)
+                .div(initialFraction)
+                .div(ethers.constants.WeiPerEther)
+            balances[owner] = (balances[owner] ?? BigNumber.from("0")).add(
+                balance
+            )
         }
     }
 
     // Keep only users with balance > 0
-    const positiveBalances = Object.entries(balances).flatMap(([address, balance]) => balance.gt(0) ? [{ address, balance }] : [])
+    const positiveBalances = Object.entries(balances).flatMap(
+        ([address, balance]) => (balance.gt(0) ? [{ address, balance }] : [])
+    )
 
     return positiveBalances
 }
 
-const getNftHolders = async (collection: "litterbox" | "planckcat", upToTimestamp: number) => {
+const getNftHolders = async (
+    collection: "litterbox" | "planckcat",
+    upToTimestamp: number
+) => {
     const transfers = await parseCSVFile(`data/${collection}_transfers.csv`)
 
     // Sort by timestamp
@@ -220,7 +268,9 @@ const getNftHolders = async (collection: "litterbox" | "planckcat", upToTimestam
         balances[to] = (balances[to] ?? 0) + value
     }
 
-    const positiveBalances = Object.entries(balances).flatMap(([address, balance]) => balance > 0 ? [{ address, balance }] : [])
+    const positiveBalances = Object.entries(balances).flatMap(
+        ([address, balance]) => (balance > 0 ? [{ address, balance }] : [])
+    )
 
     return positiveBalances
 }
