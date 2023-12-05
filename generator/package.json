@@ -4,7 +4,13 @@
     "description": "Script to generate Merkle tree root from inputs",
     "scripts": {
         "start": "ts-node src/app.ts",
-        "prettier": "prettier --write ."
+        "create:config": "ts-node src/createConfig.ts",
+        "prettier": "prettier --write .",
+        "fetch:dydx": "ts-node src/fetchers/dydx.ts",
+        "fetch:gmx": "ts-node src/fetchers/gmx.ts",
+        "fetch:aevo": "ts-node src/fetchers/aevo.ts",
+        "fetch:synthetix": "ts-node src/fetchers/synthetix.ts",
+        "fetch:perp": "ts-node src/fetchers/perp.ts"
     },
     "author": "Anish Agnihotri",
     "license": "AGPL-3.0-only",
@@ -23,9 +29,11 @@
         "typescript": "^4.5.4"
     },
     "dependencies": {
+        "axios": "^1.6.2",
+        "csv-parser": "^3.0.0",
         "ethers": "^5.5.2",
         "keccak256": "^1.0.6",
-        "merkletreejs": "^0.2.27",
+        "merkletreejs": "^0.3.11",
         "winston": "^3.3.3"
     }
 }
