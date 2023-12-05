@@ -1,14 +1,18 @@
-import * as winston from "winston" // Logging
+import * as winston from "winston"; // Logging
 
-// Setup winston logger
+// Setup winston logger with timestamp
 export const logger = winston.createLogger({
     level: "info",
-    // Simple line-by-line output
-    format: winston.format.simple(),
+    format: winston.format.combine(
+        winston.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
+        }),
+        winston.format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+    ),
     transports: [
         // Print to console
         new winston.transports.Console(),
-        // + Output to generator logfile
+        // Output to generator logfile
         new winston.transports.File({ filename: "generator.log" }),
     ],
-})
+});

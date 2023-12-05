@@ -28,10 +28,11 @@ const main = async () => {
                 depositAmount
             }
         }`
-    
+
         const variables = {}
-    
-        res = (await axios.post(SUBGRAPH, { query, variables })).data.data.deposits
+
+        res = (await axios.post(SUBGRAPH, { query, variables })).data.data
+            .deposits
 
         deposits.push(...res)
 
@@ -40,21 +41,36 @@ const main = async () => {
 
         // Save progress every 10k deposits
         if (deposits.length % 10_000 === 0) {
-            fs.writeFileSync("data/dydx.json", JSON.stringify({
-                lastTimestamp,
-                totalDeposits: deposits.length,
-                deposits
-            }, null, 4))
-            console.log(`Saved progress at t=${lastTimestamp} and ${deposits.length} deposits`)
+            fs.writeFileSync(
+                "data/dydx.json",
+                JSON.stringify(
+                    {
+                        lastTimestamp,
+                        totalDeposits: deposits.length,
+                        deposits,
+                    },
+                    null,
+                    4
+                )
+            )
+            console.log(
+                `Saved progress at t=${lastTimestamp} and ${deposits.length} deposits`
+            )
         }
-
     } while (res.length === 1000)
 
-    fs.writeFileSync("data/dydx.json", JSON.stringify({
-        lastTimestamp,
-        totalDeposits: deposits.length,
-        deposits
-    }, null, 4))
+    fs.writeFileSync(
+        "data/dydx.json",
+        JSON.stringify(
+            {
+                lastTimestamp,
+                totalDeposits: deposits.length,
+                deposits,
+            },
+            null,
+            4
+        )
+    )
 
     console.log("Total deposits:", deposits.length)
 }

@@ -17,6 +17,10 @@ npm install
 # Edit config.json
 vim config.json
 
+# Run prisma commands
+npx prisma db push
+npx prisma generate
+
 # Run script
 npm run start
 ```
